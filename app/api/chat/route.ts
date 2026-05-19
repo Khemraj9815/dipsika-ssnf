@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const HF_API_KEY = process.env.NEXT_PUBLIC_HF_API_KEY;
-const HF_API_URL = process.env.NEXT_PUBLIC_HF_API_URL || 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // Log to help debug
-console.log('[Chat API] HF_API_KEY present:', !!HF_API_KEY);
-console.log('[Chat API] HF_API_URL:', HF_API_URL);
+console.log('[Chat API] GROQ_API_KEY present:', !!GROQ_API_KEY);
+console.log('[Chat API] GROQ_API_URL:', GROQ_API_URL);
+
 
 // Fallback responses for when API is unavailable
 const fallbackResponses: { [key: string]: string } = {
-  'hello': 'Hi there! 👋 Welcome to Southern Seedling Nursery Farm. How can I help you today?',
+  'hello': 'Hi there!  Welcome to Southern Seedling Nursery Farm. How can I help you today?',
   'hi': 'Hello! 🌿 I\'m here to help. What would you like to know about our plants and services?',
   'plant': 'We have a wide variety of plants including fruit trees, ornamental plants, timber trees, foliage plants, and lawn grasses. Browse our full catalog or ask me specifically what you\'re looking for!',
   'summer': 'Summer is a great season for planting! Heat-tolerant plants like mango, lemon, and some ornamental varieties thrive. We can recommend specific plants for your location and climate.',
@@ -123,29 +124,71 @@ export async function POST(request: NextRequest) {
     }
 
     // If no API key, use fallback responses
-    if (!HF_API_KEY) {
+    if (!GROQ_API_KEY) {
       const response = findBestResponse(message);
       return NextResponse.json({ response });
     }
 
     try {
-      const response = await fetch(HF_API_URL, {
+      // System prompt with farm and website context
+      const systemPrompt = `You are a helpful plant and gardening assistant for Southern Seedling Nursery Farm, a family-run business established in 2001 in Gelephu, Bhutan. 
+
+About the farm:
+- Location: Samtenling, Bhur, Gelephu, Bhutan
+- Established: 2001 (25+ years of experience)
+- Mission: "Nurturing Nature, Earning Trust"
+- Serves: Farmers, households, hotels, resorts, and government agencies across 16+ dzongkhags
+
+Products offered:
+1. Fruit Trees (mango, lemon, orange, etc.)
+2. Ornamental Plants (roses, orchids, decorative foliage plants)
+3. Timber Trees
+4. Foliage Plants
+5. Lawn Grasses
+
+Services:
+1. Landscape Design & Installation (includes site analysis, custom design, plant selection, professional installation, maintenance plans)
+2. Orchard Management (soil testing, planting guidance, irrigation planning, pest management, seasonal maintenance)
+
+Delivery:
+- Standard delivery: 5-7 days
+- Express delivery: 2-3 days
+- Delivery fee: 10% of order total
+- Coverage: Nationwide across Bhutan
+
+Contact Information:
+- Phone: +975 17 123456 (Mon-Fri 8AM-5PM, Sat 9AM-3PM)
+- Email: info@southernseedling.com
+- Business hours: Monday-Friday 8AM-5PM, Saturday 9AM-3PM
+
+Always be helpful, friendly, and professional. Provide accurate information about plants, gardening tips, services, delivery, and ordering. If asked something you're unsure about, suggest contacting the farm directly.`;
+
+      const response = await fetch(GROQ_API_URL, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${HF_API_KEY}`,
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: {
-            text: message,
-            past_user_inputs: [],
-            generated_responses: [],
-          },
+          model: 'mixtral-8x7b-32768', // You can also use 'llama-2-70b-chat' or other Groq models
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt,
+            },
+            {
+              role: 'user',
+              content: message,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 512,
         }),
       });
 
       if (!response.ok) {
-        console.error(`Hugging Face API error: ${response.status} - ${response.statusText}`);
+        const errorData = await response.json();
+        console.error(`Groq API error: ${response.status} - ${JSON.stringify(errorData)}`);
         // Fall back to keyword matching
         const fallbackResponse = findBestResponse(message);
         return NextResponse.json({ response: fallbackResponse });
@@ -153,16 +196,17 @@ export async function POST(request: NextRequest) {
 
       const data = await response.json();
 
-      // Extract response from Hugging Face API
-      if (data.generated_text) {
-        return NextResponse.json({ response: data.generated_text });
+      // Extract response from Groq API
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        const botResponse = data.choices[0].message.content.trim();
+        return NextResponse.json({ response: botResponse });
       }
 
-      // If no generated_text, use fallback
+      // If no response content, use fallback
       const fallbackResponse = findBestResponse(message);
       return NextResponse.json({ response: fallbackResponse });
     } catch (apiError) {
-      console.error('Hugging Face API call error:', apiError);
+      console.error('Groq API call error:', apiError);
       // Fall back to keyword matching
       const fallbackResponse = findBestResponse(message);
       return NextResponse.json({ response: fallbackResponse });

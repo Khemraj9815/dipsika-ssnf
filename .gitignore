@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+CHATBOT_ARCHITECTURE.md
+CHATBOT_CUSTOMIZATION.md
+CHATBOT_QUICK_START.md
+DYNAMIC_CHATBOT_SUMMARY.md
+GROQ_SETUP.md
