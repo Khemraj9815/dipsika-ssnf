@@ -3,9 +3,25 @@ import { NextRequest, NextResponse } from 'next/server';
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-// Log to help debug
-console.log('[Chat API] GROQ_API_KEY present:', !!GROQ_API_KEY);
-console.log('[Chat API] GROQ_API_URL:', GROQ_API_URL);
+// Enhanced debugging logs
+if (typeof window === 'undefined') {
+  // Server-side only logging
+  console.log('');
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('[Chat API] ✅ API Route Loaded');
+  console.log('[Chat API] GROQ_API_KEY present:', !!GROQ_API_KEY);
+  if (GROQ_API_KEY) {
+    console.log('[Chat API] API Key found (first 10 chars):', GROQ_API_KEY.substring(0, 10) + '...');
+    console.log('[Chat API] Using Groq AI for responses ✅');
+  } else {
+    console.log('[Chat API] ⚠️  GROQ_API_KEY is NOT set!');
+    console.log('[Chat API] Will use fallback keyword-based responses');
+    console.log('[Chat API] To fix: Add GROQ_API_KEY to production environment variables');
+  }
+  console.log('[Chat API] GROQ_API_URL:', GROQ_API_URL);
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('');
+}
 
 
 // Fallback responses for when API is unavailable
