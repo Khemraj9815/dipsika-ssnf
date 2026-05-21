@@ -527,49 +527,117 @@ export default function CartPage() {
                     </div>
                   </>
                 ) : (
-                  /* Success State */
+                  /* Success State - Order Confirmed */
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-12"
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+                    className="text-center py-16"
                   >
+                    {/* Animated Success Icon */}
                     <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ repeat: Infinity, duration: 0.6 }}
-                      className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                      className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
                     >
-                      <Check className="w-10 h-10 text-green-700" />
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.3 }}
+                      >
+                        <Check className="w-12 h-12 text-green-700" strokeWidth={3} />
+                      </motion.div>
                     </motion.div>
 
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Order Confirmed! ✅</h3>
-                    <p className="text-gray-600 mb-6">Thank you for your order, {buyerInfo.fullName}!</p>
+                    {/* Main Heading */}
+                    <motion.h3
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-4xl font-bold text-gray-900 mb-2"
+                    >
+                      Order Confirmed! 
+                    </motion.h3>
+                    
+                    <motion.p
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-xl text-green-700 font-semibold mb-8"
+                    >
+                      Thank you for your order, {buyerInfo.fullName}!
+                    </motion.p>
 
-                    <div className="bg-green-50 p-6 rounded-lg mb-6 border border-green-200 text-left">
-                      <div className="space-y-3">
+                    {/* Order Details Box */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-xl mb-8 border-2 border-green-300 shadow-md"
+                    >
+                      <div className="grid md:grid-cols-3 gap-6">
+                        <div className="border-r border-green-300 md:pr-6">
+                          <p className="text-sm text-gray-600 mb-1">Order Total</p>
+                          <p className="text-3xl font-bold text-green-700">Nu. {grandTotal}</p>
+                        </div>
+                        <div className="border-r border-green-300 md:pr-6">
+                          <p className="text-sm text-gray-600 mb-1">Delivery Location</p>
+                          <p className="text-lg font-semibold text-gray-900">{buyerInfo.dzongkhag}</p>
+                        </div>
                         <div>
-                          <p className="text-sm text-gray-600">Order Total</p>
-                          <p className="text-2xl font-bold text-green-700">Nu. {grandTotal}</p>
-                        </div>
-                        <div className="pt-3 border-t border-green-300">
-                          <p className="text-sm text-gray-600">Delivery to</p>
-                          <p className="font-semibold text-gray-900">{buyerInfo.dzongkhag}</p>
-                        </div>
-                        <div className="pt-3 border-t border-green-300">
-                          <p className="text-sm text-gray-600">Delivery Method</p>
-                          <p className="font-semibold text-gray-900">
+                          <p className="text-sm text-gray-600 mb-1">Delivery Method</p>
+                          <p className="text-lg font-semibold text-gray-900">
                             {buyerInfo.deliveryOption === 'standard' ? 'Standard (5-7 days)' : 'Express (2-3 days)'}
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
 
-                    <p className="text-gray-600 mb-6">
-                      We will contact you at <span className="font-semibold">{buyerInfo.phone}</span> soon with delivery details.
-                    </p>
+                    {/* Contact Information */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="space-y-3 mb-8"
+                    >
+                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <p className="text-sm text-gray-600">📱 We will contact you at:</p>
+                        <p className="text-lg font-bold text-blue-700">{buyerInfo.phone}</p>
+                      </div>
 
-                    <p className="text-sm text-gray-500">
-                      A confirmation email has been sent to <span className="font-semibold">{buyerInfo.email}</span>
-                    </p>
+                      <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                        <p className="text-sm text-gray-600">📧 Confirmation sent to:</p>
+                        <p className="text-lg font-bold text-purple-700">{buyerInfo.email}</p>
+                      </div>
+                    </motion.div>
+
+                    {/* Success Message */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.7 }}
+                      className="p-4 bg-yellow-50 border border-yellow-300 rounded-lg mb-8"
+                    >
+                      <p className="text-sm text-yellow-800">
+                        ⏱️ Modal will close automatically in a few seconds...
+                      </p>
+                    </motion.div>
+
+                    {/* Next Steps */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 }}
+                      className="text-gray-600"
+                    >
+                      <p className="font-semibold mb-2">What happens next?</p>
+                      <ul className="text-sm space-y-1 inline-block text-left">
+                        <li>Our team will review your order</li>
+                        <li>We will prepare your plants carefully</li>
+                        <li>We will contact you with delivery details</li>
+                        <li>Your order will be delivered on time</li>
+                      </ul>
+                    </motion.div>
                   </motion.div>
                 )}
               </div>
