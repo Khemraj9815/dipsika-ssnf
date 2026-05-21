@@ -1,4 +1,4 @@
-# Deployment Guide - Southern Seedling E-Commerce Website
+/images/products/buffalo-grass.jpg# Deployment Guide - Southern Seedling E-Commerce Website
 
 Complete guide to deploy the Southern Seedling website to production.
 
