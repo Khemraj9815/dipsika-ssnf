@@ -84,7 +84,7 @@ export const products: Product[] = [
     name: 'Lemon Tree',
     category: 'fruit-trees',
     price: 400,
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&w=500&h=500&fit=crop',
+    image: '/images/products/lemon.jpg',
     description: 'Productive lemon saplings for home and commercial use',
     inventory: 60,
     plantingGuidelines: 'Plant in sunny location with well-drained soil.',
